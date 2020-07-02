@@ -1,6 +1,5 @@
 package com.example.cryptoapp.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +7,6 @@ import com.example.cryptoapp.api.CryptoModel
 import com.example.cryptoapp.repository.CryptoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 /**
@@ -20,17 +18,21 @@ Mail : bugrayetkinn@gmail.com
  */
 class CryptoViewModel(private val repository: CryptoRepository) : ViewModel() {
 
+    /**
+     * LiveData'nı böyle kullanıdıgın zaman dışarıdan(Fragment,Activity vs.) set edilemicek, sadece
+     * observe edebilceksin.
+     */
+    private val _allCrypto = MutableLiveData<List<CryptoModel>>()
+    val allCrypto get() = _allCrypto
 
-    var allCrypto: LiveData<List<CryptoModel>>? = null
-
-    fun crypto(): LiveData<List<CryptoModel>>? {
-        viewModelScope.launch {
-            withContext(Dispatchers.Main) {
-                allCrypto = repository.getAllCrypto()
-            }
-        }
-        return allCrypto
+    init {
+        crypto()
     }
 
-
+    private fun crypto() {
+        // Kullancagın dispatcer'ı bu şekilde Main,IO,Default vs. gibi belirleyebilirsin.
+        viewModelScope.launch(Dispatchers.IO) {
+            _allCrypto.postValue(repository.getAllCrypto())
+        }
+    }
 }
