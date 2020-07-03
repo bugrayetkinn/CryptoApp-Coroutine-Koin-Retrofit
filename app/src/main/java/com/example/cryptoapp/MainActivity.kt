@@ -10,9 +10,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val mainBinding: ActivityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
-    }
+
+    private val mainBinding by viewBinding(ActivityMainBinding::inflate)
 
     private val cryptoViewModel: CryptoViewModel by viewModel()
 
